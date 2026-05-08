@@ -1,17 +1,13 @@
 import dotenv from "dotenv";
-import OpenAI from "openai";
 import readline from "readline";
 import {
   saveMemory,
   getMemories,
   searchMemories
 } from "./src/memory/memory.js";
+import { askAI } from "./src/ai/openai.js";
 
 dotenv.config();
-
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -20,22 +16,10 @@ const rl = readline.createInterface({
 
 async function askAgent(question) {
   try {
-    const response = await client.chat.completions.create({
-      model: "gpt-4.1-mini",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful AI assistant.",
-        },
-        {
-          role: "user",
-          content: question,
-        },
-      ],
-    });
+    const answer = await askAI(question);
 
     console.log("\nAI:");
-    console.log(response.choices[0].message.content);
+    console.log(answer);
   } catch (error) {
     console.error("Error:", error.message);
   }
