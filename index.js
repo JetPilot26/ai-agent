@@ -1,6 +1,7 @@
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import readline from "readline";
+import { saveMemory, getMemories } from "./src/memory/memory.js";
 
 dotenv.config();
 
@@ -15,7 +16,6 @@ const rl = readline.createInterface({
 
 async function askAgent(question) {
   try {
-
     const response = await client.chat.completions.create({
       model: "gpt-4.1-mini",
       messages: [
@@ -32,7 +32,6 @@ async function askAgent(question) {
 
     console.log("\nAI:");
     console.log(response.choices[0].message.content);
-
   } catch (error) {
     console.error("Error:", error.message);
   }
@@ -41,18 +40,35 @@ async function askAgent(question) {
 }
 
 function promptUser() {
-
   rl.question("\nYou: ", (input) => {
-
     if (input.toLowerCase() === "exit") {
       rl.close();
       return;
     }
 
+    if (input.toLowerCase().startsWith("remember ")) {
+      const memoryText = input.substring(9);
+
+      saveMemory(memoryText);
+
+      console.log("\nMemory saved.");
+
+      promptUser();
+      return;
+    }
+
+    if (input.toLowerCase() === "show memories") {
+      const memories = getMemories();
+
+      console.log("\nMemories:");
+      console.log(memories);
+
+      promptUser();
+      return;
+    }
+
     askAgent(input);
-
   });
-
 }
 
 console.log("AI Agent Started");
