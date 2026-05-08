@@ -1,7 +1,11 @@
 import dotenv from "dotenv";
 import OpenAI from "openai";
 import readline from "readline";
-import { saveMemory, getMemories } from "./src/memory/memory.js";
+import {
+  saveMemory,
+  getMemories,
+  searchMemories
+} from "./src/memory/memory.js";
 
 dotenv.config();
 
@@ -66,6 +70,26 @@ function promptUser() {
       promptUser();
       return;
     }
+
+if (input.toLowerCase().includes("favorite guitar")) {
+
+  const results = searchMemories("guitar");
+
+  if (results.length > 0) {
+
+    console.log("\nAI:");
+    console.log(results[0].text);
+
+  } else {
+
+    console.log("\nAI:");
+    console.log("I do not know your favorite guitar yet.");
+
+  }
+
+  promptUser();
+  return;
+}
 
     askAgent(input);
   });

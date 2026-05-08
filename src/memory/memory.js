@@ -27,5 +27,16 @@ export function getMemories() {
   }
 
   const data = fs.readFileSync(MEMORY_FILE, "utf8");
+
   return JSON.parse(data);
+}
+
+export function searchMemories(query) {
+
+  const memories = getMemories();
+
+  return memories.filter(memory =>
+    memory.text.toLowerCase().includes(query.toLowerCase())
+  );
+
 }
