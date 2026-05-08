@@ -2,7 +2,9 @@ import { askAI } from "../ai/openai.js";
 import {
   saveMemory,
   getMemories,
-  searchMemories
+  searchMemories,
+  deleteMemories,
+  updateMemory
 } from "../memory/memory.js";
 
 export async function routeInput(input) {
@@ -25,6 +27,19 @@ export async function routeInput(input) {
       response: "Memory saved."
     };
   }
+
+if (lowerInput.startsWith("forget ")) {
+
+  const query = input.substring(7);
+
+  const deletedCount = deleteMemories(query);
+
+  return {
+    shouldExit: false,
+    response: `Forgot ${deletedCount} matching memory item(s).`
+  };
+
+}
 
   if (
   lowerInput.startsWith("what is my") ||

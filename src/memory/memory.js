@@ -40,3 +40,23 @@ export function searchMemories(query) {
   );
 
 }
+
+export function deleteMemories(query) {
+  const memories = getMemories();
+
+  const remainingMemories = memories.filter(memory =>
+    !memory.text.toLowerCase().includes(query.toLowerCase())
+  );
+
+  fs.writeFileSync(
+    MEMORY_FILE,
+    JSON.stringify(remainingMemories, null, 2)
+  );
+
+  return memories.length - remainingMemories.length;
+}
+
+export function updateMemory(query, newText) {
+  deleteMemories(query);
+  saveMemory(newText);
+}
