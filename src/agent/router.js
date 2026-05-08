@@ -41,6 +41,39 @@ if (lowerInput.startsWith("forget ")) {
 
 }
 
+if (lowerInput.startsWith("update ")) {
+
+  const updateText = input.substring(7);
+
+  if (updateText.includes(" to ")) {
+
+    const parts = updateText.split(" to ");
+
+    const query = parts[0]
+      .replace("my ", "")
+      .trim();
+
+    const newValue = parts[1].trim();
+
+    updateMemory(
+      query,
+      `my ${query} is ${newValue}`
+    );
+
+    return {
+      shouldExit: false,
+      response: "Memory updated."
+    };
+
+  }
+
+  return {
+    shouldExit: false,
+    response: "Use format: update my favorite amp to the Spark 2"
+  };
+
+}
+
   if (
   lowerInput.startsWith("what is my") ||
   lowerInput.startsWith("what's my") ||
