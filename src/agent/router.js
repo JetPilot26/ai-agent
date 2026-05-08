@@ -17,20 +17,35 @@ export async function routeInput(input) {
     };
   }
 
-  if (lowerInput.startsWith("remember ")) {
-    const memoryText = input.substring(9);
+  if (lowerInput.startsWith("remember")) {
+  const memoryText = input.substring(8).trim();
 
-    saveMemory(memoryText);
-
+  if (!memoryText) {
     return {
       shouldExit: false,
-      response: "Memory saved."
+      response: "Please tell me what to remember. Example: remember my favorite amp is the Spark 2"
     };
   }
 
-if (lowerInput.startsWith("forget ")) {
+  saveMemory(memoryText);
 
-  const query = input.substring(7);
+  return {
+    shouldExit: false,
+    response: "Memory saved."
+  };
+}
+
+if (lowerInput.startsWith("forget")) {
+  const query = input.substring(6).trim();
+
+  const unsafeForgetWords = ["", "my", "the", "a", "an", "favorite", "memory", "memories"];
+
+  if (unsafeForgetWords.includes(query.toLowerCase()) || query.length < 3) {
+    return {
+      shouldExit: false,
+      response: "Please be more specific about what to forget. Example: forget favorite amp"
+    };
+  }
 
   const deletedCount = deleteMemories(query);
 
@@ -38,15 +53,19 @@ if (lowerInput.startsWith("forget ")) {
     shouldExit: false,
     response: `Forgot ${deletedCount} matching memory item(s).`
   };
-
 }
 
-if (lowerInput.startsWith("update ")) {
+if (lowerInput.startsWith("update")) {
+  const updateText = input.substring(6).trim();
 
-  const updateText = input.substring(7);
+  if (!updateText) {
+    return {
+      shouldExit: false,
+      response: "Please tell me what to update. Example: update my favorite amp to the Spark 2"
+    };
+  }
 
   if (updateText.includes(" to ")) {
-
     const parts = updateText.split(" to ");
 
     const query = parts[0]
@@ -54,6 +73,13 @@ if (lowerInput.startsWith("update ")) {
       .trim();
 
     const newValue = parts[1].trim();
+
+    if (!query || !newValue) {
+      return {
+        shouldExit: false,
+        response: "Use format: update my favorite amp to the Spark 2"
+      };
+    }
 
     updateMemory(
       query,
@@ -64,16 +90,13 @@ if (lowerInput.startsWith("update ")) {
       shouldExit: false,
       response: "Memory updated."
     };
-
   }
 
   return {
     shouldExit: false,
     response: "Use format: update my favorite amp to the Spark 2"
   };
-
 }
-
   if (
   lowerInput.startsWith("what is my") ||
   lowerInput.startsWith("what's my") ||
