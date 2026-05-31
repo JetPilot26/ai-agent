@@ -6,20 +6,27 @@ dotenv.config();
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout,
+  output: process.stdout
 });
 
+let isRunning = true;
+
 async function promptUser() {
-  rl.question("\nYou: ", async (input) => {
+  if (!isRunning) {
+    return;
+  }
+
+  rl.question("\nYou: ", async input => {
     try {
       const result = await routeInput(input);
 
-      if (result.response) {
+      if (result?.response) {
         console.log("\nAI:");
         console.log(result.response);
       }
 
-      if (result.shouldExit) {
+      if (result?.shouldExit) {
+        isRunning = false;
         rl.close();
         return;
       }
@@ -31,6 +38,16 @@ async function promptUser() {
     }
   });
 }
+
+rl.on("SIGINT", () => {
+  console.log("\nGoodbye.");
+  isRunning = false;
+  rl.close();
+});
+
+rl.on("close", () => {
+  isRunning = false;
+});
 
 console.log("AI Agent Started");
 promptUser();
