@@ -19,7 +19,7 @@ const client = new OpenAI({
 const DEFAULT_MODEL =
   process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-export async function askAI(question) {
+export async function askAI(question, conversationHistory = []) {
   if (
     typeof question !== "string" ||
     question.trim() === ""
@@ -41,6 +41,7 @@ export async function askAI(question) {
             content:
               "You are a helpful AI assistant. Be concise, clear, and practical."
           },
+          ...conversationHistory,
           {
             role: "user",
             content: question.trim()

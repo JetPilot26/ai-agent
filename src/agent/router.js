@@ -6,6 +6,24 @@ import {
   updateMemory
 } from "../memory/memory.js";
 
+const conversationHistory = [];
+const MAX_HISTORY_MESSAGES = 10;
+
+function addToConversationHistory(role, content) {
+  if (!content || typeof content !== "string") {
+    return;
+  }
+
+  conversationHistory.push({
+    role,
+    content: content.trim()
+  });
+
+  while (conversationHistory.length > MAX_HISTORY_MESSAGES) {
+    conversationHistory.shift();
+  }
+}
+
 const UNSAFE_FORGET_WORDS = [
   "",
   "my",
@@ -51,7 +69,7 @@ export async function routeInput(input) {
   }
 
   const lowerInput = userInput.toLowerCase();
-
+  
   if (lowerInput === "exit") {
     return {
       shouldExit: true,
@@ -180,13 +198,11 @@ export async function routeInput(input) {
     }
   }
 
-  if (
-    lowerInput.startsWith("what is my") ||
-    lowerInput.startsWith("what's my") ||
-    lowerInput.startsWith("what do i") ||
-    lowerInput.startsWith("what did i") ||
-    lowerInput.includes("do you remember")
-  ) {
+  
+    if (
+  lowerInput.includes("do you remember") ||
+  lowerInput.includes("from memory")
+) {
     const words = lowerInput
       .replace("what is my", "")
       .replace("what's my", "")
@@ -248,7 +264,10 @@ export async function routeInput(input) {
   }
 
   try {
-    const aiResponse = await askAI(userInput);
+    const aiResponse = await askAI(userInput, conversationHistory);
+
+    addToConversationHistory("user", userInput);
+    addToConversationHistory("assistant", aiResponse);
 
     return {
       shouldExit: false,
